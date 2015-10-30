@@ -26,17 +26,23 @@ class QaChecker(object):
         for c in comment.replies:
             self.recursive_check(c, current_type)
 
+def is_question(comment):
+    return '?' in str(comment)
+
+def is_answer(comment):
+    return '?' not in str(comment)
+
 def qa_check(comments):
-    reported_comments = set()
-    for comment in comments:
-        for a, b in core.get_pairs(comment):
-            if '?' in str(a) and '?' in str(b):
-                reported_comments.add(a)
-                reported_comments.add(b)
-            if '?' not in str(a) and '?' not in str(b):
-                reported_comments.add(a)
-                reported_comments.add(b)
-    return reported_comments
+    threads = [core.get_threads(comment) for comment in comments]
+    for thread in threads:
+        for branch in thread:
+            branch = tuple(branch)
+            for comment in branch[1::2]:
+                if is_answer(comment):
+                    yield comment
+            for comment in branch[::2]:
+                if is_question(comment):
+                    yield comment
 
 def qa_check2(comments):
     checker = QaChecker()
