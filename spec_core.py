@@ -1,8 +1,5 @@
 from socrates import get_threads, find_potential_violations
 
-from hypothesis import strategies, Settings, Verbosity
-from hypothesis import given
-
 class Comment(object):
     def __init__(self, content, replies=None):
         self._content = content
