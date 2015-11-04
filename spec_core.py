@@ -1,4 +1,7 @@
-from core import get_threads
+from socrates import get_threads, find_potential_violations
+
+from hypothesis import strategies, Settings, Verbosity
+from hypothesis import given
 
 class Comment(object):
     def __init__(self, content, replies=None):
@@ -19,7 +22,7 @@ class Comment(object):
             return self._content == other._content
         return False
 
-class DescribeGetPairs:
+class DescribeGetThreads:
     def should_get_simple_thread(self):
         comment1 = Comment('Comment 1')
         assert [[comment1]] == list(get_threads(comment1))
@@ -47,3 +50,9 @@ class DescribeGetPairs:
         comment2 = Comment('Comment 2')
         comment1 = Comment('Comment 1', replies=[comment2, comment3])
         assert [[comment1, comment2], [comment1, comment3, comment4]] == list(get_threads(comment1))
+
+class CheckFindPotentialViolations:
+    def check_uneven_number_of_questions(self):
+        branch = ['answer', 'question?', 'bad question?']
+        results = set(find_potential_violations(branch))
+        assert 'bad question?' in results
